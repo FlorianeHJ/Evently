@@ -5,14 +5,13 @@ const config: Config = {
     theme: {
         colors: {
             // Couleurs personnalisées
-            background: '#e0f7ef', // couleur crème/vert eau clair
-            primary: '#36c2ad', // couleur turquoise/vert clair plus foncé
-            button: '#171717', // couleur des boutons (noir)
-            buttonText: '#f3f3e1', // couleur de texte pour les boutons (blanc/crème)
+            background: '#e0f7ef',
+            primary: '#36c2ad',
+            button: '#171717',
+            buttonText: '#f3f3e1',
         },
         fontFamily: {
-            // Ajouter Brittany Signature
-            sans: ['Brittany Signature', 'Arial', 'sans-serif'],
+            primary: 'Brittany Signature',
         },
         screens: {
             sm: '640px',
