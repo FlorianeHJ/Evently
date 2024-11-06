@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { FaBell, FaCog } from 'react-icons/fa'
-import logo from '../assets/Evently.png'
+import logo from '../assets/logo.png'
 
 const Headers = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false)

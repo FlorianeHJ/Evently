@@ -20,26 +20,49 @@ const Footer = () => {
                     <h2 className="font-secondary tracking-widest text-lg pb-1">
                         Nous contacter
                     </h2>
-                    <span>Formulaire de contact</span>
-                    <span>Mail</span>
-                    <span>Téléphone</span>
-                    <span>Adresse</span>
+                    <a href="#" className="hover:shadow-lg">
+                        <span>Formulaire de contact</span>
+                    </a>
+                    <a
+                        href="mailto:fjulia.dev@gmail.com"
+                        className="hover:shadow-lg"
+                    >
+                        <span>Mail</span>
+                    </a>
+                    <a href="#" className="hover:shadow-lg">
+                        <span>Téléphone</span>
+                    </a>
+                    <a href="#" className="hover:shadow-lg">
+                        <span>Adresse</span>
+                    </a>
                 </div>
                 <div className="flex flex-col gap-1 text-sm">
                     <h2 className="font-secondary tracking-widest text-lg pb-1">
                         Nous suivre
                     </h2>
-                    <span>Facebook</span>
-                    <span>Twitter</span>
-                    <span>Instagram</span>
+                    <a href="#" className="hover:shadow-lg">
+                        <span>Facebook</span>
+                    </a>
+                    <a href="#" className="hover:shadow-lg">
+                        <span>Twitter</span>
+                    </a>
+                    <a href="#" className="hover:shadow-lg">
+                        <span>Instagram</span>
+                    </a>
                 </div>
                 <div className="flex flex-col gap-1 text-sm">
                     <h2 className="font-secondary tracking-widest text-lg pb-1">
                         Aide
                     </h2>
-                    <span>FAQ</span>
-                    <span>Inspiration</span>
-                    <span>Mentions légales</span>
+                    <a href="#" className="hover:shadow-lg">
+                        <span>FAQ</span>
+                    </a>
+                    <a href="#" className="hover:shadow-lg">
+                        <span>Inspiration</span>
+                    </a>
+                    <a href="#" className="hover:shadow-lg">
+                        <span>Mentions légales</span>
+                    </a>
                 </div>
             </div>
         </footer>

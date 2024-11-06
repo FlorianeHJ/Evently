@@ -17,6 +17,9 @@ const montserrat = localFont({
 export const metadata = {
     title: 'Evently',
     description: "Simplifiez l'organisation de vos événements",
+    icons: {
+        icon: '/logo.png',
+    },
 }
 
 export default function RootLayout({
