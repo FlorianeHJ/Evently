@@ -15,7 +15,7 @@ const Headers = () => {
     }
 
     return (
-        <div className="flex justify-between items-center bg-primary p-2">
+        <div className="flex justify-between items-center bg-primary/50 p-2">
             <div className="">
                 <Link href="/">
                     <Image

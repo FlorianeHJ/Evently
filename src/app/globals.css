@@ -11,6 +11,9 @@
     }
 
     .btn:hover {
-        @apply bg-background2;
+        @apply bg-btnHover shadow-lg;
+    }
+    .btnActive {
+        @apply bg-btnSelected;
     }
 }

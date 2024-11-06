@@ -7,7 +7,9 @@ const config: Config = {
             background: '#FFF9F3',
             background2: '#D7BA88',
             primary: '#ADBF9F',
-            button: '#414B3B',
+            button: '#6B7F55',
+            btnHover: '#7A8D64',
+            btnSelected: '#24372A',
             text: '#FFF9E8',
         },
         fontFamily: {

@@ -44,7 +44,7 @@ const page = () => {
                         width={150}
                         className="py-10"
                     />
-                    <Link href="/create-event">
+                    <Link href="/new-event">
                         <button className="btn mt-4">
                             Créer un nouvel événement
                         </button>
