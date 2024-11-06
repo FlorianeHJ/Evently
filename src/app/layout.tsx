@@ -1,3 +1,4 @@
+import Footer from '@/components/Footer'
 import Headers from '@/components/Headers'
 import localFont from 'next/font/local'
 import './globals.css'
@@ -30,6 +31,7 @@ export default function RootLayout({
             >
                 <Headers />
                 {children}
+                <Footer />
             </body>
         </html>
     )
