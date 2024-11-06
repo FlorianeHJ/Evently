@@ -17,11 +17,8 @@ const Headers = () => {
                 </Link>
             </div>
             <div>
-                <Link href="/signup">
-                    <button className="btn">S'inscrire</button>
-                </Link>
                 <Link href="/login">
-                    <button className="btn ml-3">Se connecter</button>
+                    <button className="btn">Connexion</button>
                 </Link>
             </div>
         </div>
