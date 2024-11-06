@@ -4,13 +4,13 @@
 
 @layer base {
     body {
-        @apply text-base;
+        @apply text-base bg-background font-primary;
     }
     .btn {
-        @apply bg-button text-buttonText font-medium py-2 px-4 rounded transition-colors;
+        @apply bg-button text-text text-sm py-2 px-6 rounded-lg transition-colors;
     }
 
     .btn:hover {
-        @apply bg-primary text-foreground;
+        @apply bg-background2;
     }
 }

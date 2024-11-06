@@ -4,14 +4,15 @@ const config: Config = {
     content: ['./src/**/*.{js,jsx,ts,tsx}'],
     theme: {
         colors: {
-            // Couleurs personnalisées
-            background: '#e0f7ef',
-            primary: '#36c2ad',
-            button: '#171717',
-            buttonText: '#f3f3e1',
+            background: '#FFF9F3',
+            background2: '#D7BA88',
+            primary: '#ADBF9F',
+            button: '#414B3B',
+            text: '#FFF9E8',
         },
         fontFamily: {
-            primary: 'Brittany Signature',
+            primary: 'montserrat',
+            secondary: 'shadowsIntoLight',
         },
         screens: {
             sm: '640px',
