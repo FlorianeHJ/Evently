@@ -91,6 +91,64 @@ const Page = () => {
         return 0
     })
 
+    // Rendu de la liste des tâches triées
+    const renderTasks = () => {
+        if (sortOption === 'category') {
+            // Regrouper les tâches par catégorie
+            const tasksByCategory = tasks.reduce((acc, task) => {
+                if (!acc[task.category]) acc[task.category] = []
+                acc[task.category].push(task)
+                return acc
+            }, {} as Record<string, Task[]>)
+
+            return (
+                <div className="space-y-6 mt-4">
+                    {Object.entries(tasksByCategory).map(
+                        ([category, tasks]) => (
+                            <div key={category}>
+                                {/* Affichage du nom de la catégorie */}
+                                <h3 className="text-base mb-4 mr-4 mt-6 px-4 bg-primary inline-block rounded-full py-1 ">
+                                    {category}
+                                </h3>
+                                {/* Liste des tâches sous chaque catégorie */}
+                                <div className="space-y-3">
+                                    {tasks.map((task) => (
+                                        <TaskItem
+                                            key={task.id}
+                                            task={task}
+                                            onComplete={() =>
+                                                completeTask(task.id)
+                                            }
+                                            onDelete={() => deleteTask(task.id)}
+                                            onEdit={() => editTask(task)}
+                                            hideCategory={true}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )
+                    )}
+                </div>
+            )
+        }
+
+        // Si le tri n'est pas par catégorie, afficher les tâches normalement
+        return (
+            <div className="space-y-3 mt-4">
+                {sortedTasks.map((task) => (
+                    <TaskItem
+                        key={task.id}
+                        task={task}
+                        onComplete={() => completeTask(task.id)}
+                        onDelete={() => deleteTask(task.id)}
+                        onEdit={() => editTask(task)}
+                        hideCategory={false} // Afficher le tag de catégorie
+                    />
+                ))}
+            </div>
+        )
+    }
+
     return (
         <div className="w-full p-4 rounded-lg shadow-xl bg-background">
             {/* Message pour liste de tâches vide */}
@@ -140,7 +198,7 @@ const Page = () => {
                 />
             )}
 
-            {/* Filtre pour trier les tâches (affiché uniquement s'il y a des tâches en cours) */}
+            {/* Filtre pour trier les tâches */}
             {tasks.length > 0 && (
                 <div className="flex justify-between items-center mb-4">
                     <label className="text-sm font-semibold">
@@ -167,18 +225,8 @@ const Page = () => {
                 </div>
             )}
 
-            {/* Liste des tâches */}
-            <div className="space-y-3 mt-4">
-                {sortedTasks.map((task) => (
-                    <TaskItem
-                        key={task.id}
-                        task={task}
-                        onComplete={() => completeTask(task.id)}
-                        onDelete={() => deleteTask(task.id)}
-                        onEdit={() => editTask(task)}
-                    />
-                ))}
-            </div>
+            {/* Rendu des tâches selon le filtre sélectionné */}
+            {renderTasks()}
 
             {/* Liste des tâches terminées */}
             {completedTasks.length > 0 && (

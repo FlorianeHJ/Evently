@@ -17,21 +17,19 @@ const TaskForm: React.FC<TaskFormProps> = ({
     const [category, setCategory] = useState<string>(
         initialTask?.category || ''
     )
-
     const [priority, setPriority] = useState<'Basse' | 'Haute'>(
         initialTask?.priority || 'Basse'
     )
     const [note, setNote] = useState<string>(initialTask?.note || '')
+    const [dueDate, setDueDate] = useState<string>(initialTask?.dueDate || '') // État pour la date d'échéance
     const [errors, setErrors] = useState<{ title?: string; category?: string }>(
         {}
     )
 
-    // Fonction pour basculer entre "Haute" et "Basse" priorité
     const togglePriority = () => {
         setPriority(priority === 'Haute' ? 'Basse' : 'Haute')
     }
 
-    // Vérifie les champs obligatoires et retourne les erreurs, s'il y en a
     const validateFields = () => {
         const newErrors: { title?: string; category?: string } = {}
         if (!title) newErrors.title = 'Veuillez remplir ce champ'
@@ -40,7 +38,6 @@ const TaskForm: React.FC<TaskFormProps> = ({
         return newErrors
     }
 
-    // Soumission du formulaire
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
 
@@ -51,35 +48,36 @@ const TaskForm: React.FC<TaskFormProps> = ({
         }
 
         const newTask: Task = {
-            id: initialTask ? initialTask.id : Date.now(), // Utilise l'ID existant en mode modification
+            id: initialTask ? initialTask.id : Date.now(),
             title,
             category,
             priority,
             completed: initialTask ? initialTask.completed : false,
             note,
+            dueDate, // Inclure la date d'échéance dans la nouvelle tâche
         }
 
-        addTask(newTask) // Ajoute ou met à jour la tâche
+        addTask(newTask)
         resetForm()
     }
 
-    // Réinitialise le formulaire
     const resetForm = () => {
         setTitle('')
         setCategory('')
         setPriority('Basse')
         setNote('')
+        setDueDate('') // Réinitialiser la date d'échéance
 
         setErrors({})
     }
 
-    // Remplit les champs si une tâche est en cours de modification
     useEffect(() => {
         if (initialTask) {
             setTitle(initialTask.title)
             setCategory(initialTask.category)
             setPriority(initialTask.priority)
             setNote(initialTask.note || '')
+            setDueDate(initialTask.dueDate || '') // Remplir la date d'échéance si elle est présente
         }
     }, [initialTask])
 
@@ -97,11 +95,11 @@ const TaskForm: React.FC<TaskFormProps> = ({
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full p-2 border rounded outline-none text-sm"
+                    className="w-full p-2 rounded outline-none text-xs"
                     placeholder="Entrez une tâche"
                 />
                 {errors.title && (
-                    <p className="text-red-500 text-xs py-1 italic">
+                    <p className="text-error text-xs py-1 italic">
                         {errors.title}
                     </p>
                 )}
@@ -115,7 +113,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
                 <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full p-2 border rounded outline-none text-sm"
+                    className=" w-full p-2 rounded outline-none text-xs"
                 >
                     <option value="">--Sélectionner--</option>
                     {categories.map((cat) => (
@@ -124,9 +122,8 @@ const TaskForm: React.FC<TaskFormProps> = ({
                         </option>
                     ))}
                 </select>
-
                 {errors.category && (
-                    <p className="text-red-500 text-xs py-1 italic">
+                    <p className="text-error text-xs py-1 italic">
                         {errors.category}
                     </p>
                 )}
@@ -141,11 +138,24 @@ const TaskForm: React.FC<TaskFormProps> = ({
                     className="focus:outline-none"
                 >
                     {priority === 'Haute' ? (
-                        <FaStar className="text-2xl" />
+                        <FaStar className="text-xl" />
                     ) : (
-                        <FaRegStar className="text-2xl " />
+                        <FaRegStar className="text-xl " />
                     )}
                 </button>
+            </div>
+
+            {/* Champ d'échéance */}
+            <div>
+                <label className="block text-sm font-semibold mb-1">
+                    Échéance
+                </label>
+                <input
+                    type="date"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                    className="w-full p-2 rounded outline-none text-xs"
+                />
             </div>
 
             {/* Champ Note */}
@@ -154,8 +164,9 @@ const TaskForm: React.FC<TaskFormProps> = ({
                 <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    className="w-full p-2 border rounded outline-none text-sm"
-                    placeholder="Ajouter une note"
+                    className="w-full p-2  rounded outline-none text-xs"
+                    placeholder="Ajoutez une note"
+                    rows={6}
                 />
             </div>
 

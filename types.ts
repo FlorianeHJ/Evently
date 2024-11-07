@@ -6,4 +6,5 @@ export interface Task {
     priority: 'Basse' | 'Haute'
     completed: boolean
     note?: string
+    dueDate?: string
 }
