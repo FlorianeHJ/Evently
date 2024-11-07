@@ -4,6 +4,7 @@ import {
     FaRegStar,
     FaStar,
     FaTrash,
+    FaUndo,
 } from 'react-icons/fa'
 import { Task } from '../../types'
 
@@ -12,6 +13,7 @@ interface TaskItemProps {
     onComplete?: () => void
     onDelete?: () => void
     onEdit?: () => void
+    onReactivate?: () => void
     isCompleted?: boolean
 }
 
@@ -20,6 +22,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     onComplete,
     onDelete,
     onEdit,
+    onReactivate,
     isCompleted,
 }) => {
     return (
@@ -61,17 +64,26 @@ const TaskItem: React.FC<TaskItemProps> = ({
             </div>
 
             <div className="flex space-x-2">
-                {/* Bouton de complétion (n'est pas affiché si la tâche est déjà terminée) */}
+                {/* Bouton pour remettre en cours une tâche archivée */}
+                {isCompleted && onReactivate && (
+                    <button onClick={onReactivate} title="Réactiver la tâche">
+                        <FaUndo className="text-xl text-blue-500" />
+                    </button>
+                )}
+
+                {/* Bouton de complétion pour une tâche en cours */}
                 {!isCompleted && (
                     <button onClick={onComplete} title="Marquer comme terminé">
                         <FaCheckCircle className="text-xl text-green-500" />
                     </button>
                 )}
 
-                {/* Bouton de modification */}
-                <button onClick={onEdit} title="Modifier la tâche">
-                    <FaEdit className="text-lg text-blue-500" />
-                </button>
+                {/* Bouton de modification pour une tâche en cours */}
+                {!isCompleted && onEdit && (
+                    <button onClick={onEdit} title="Modifier la tâche">
+                        <FaEdit className="text-lg text-blue-500" />
+                    </button>
+                )}
 
                 {/* Bouton de suppression */}
                 <button onClick={onDelete} title="Supprimer définitivement">

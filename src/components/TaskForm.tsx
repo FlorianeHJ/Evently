@@ -5,14 +5,19 @@ import { Task } from '../../types'
 interface TaskFormProps {
     addTask: (task: Task) => void
     initialTask?: Task | null
+    categories: string[]
 }
 
-const TaskForm: React.FC<TaskFormProps> = ({ addTask, initialTask }) => {
-    // États pour les champs du formulaire, initialisés avec les données de `initialTask` si présentes
+const TaskForm: React.FC<TaskFormProps> = ({
+    addTask,
+    initialTask,
+    categories,
+}) => {
     const [title, setTitle] = useState<string>(initialTask?.title || '')
     const [category, setCategory] = useState<string>(
         initialTask?.category || ''
     )
+
     const [priority, setPriority] = useState<'Basse' | 'Haute'>(
         initialTask?.priority || 'Basse'
     )
@@ -64,10 +69,11 @@ const TaskForm: React.FC<TaskFormProps> = ({ addTask, initialTask }) => {
         setCategory('')
         setPriority('Basse')
         setNote('')
+
         setErrors({})
     }
 
-    // Réinitialise les champs si `initialTask` change (utile pour la modification)
+    // Remplit les champs si une tâche est en cours de modification
     useEffect(() => {
         if (initialTask) {
             setTitle(initialTask.title)
@@ -80,7 +86,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ addTask, initialTask }) => {
     return (
         <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-5 mb-4 p-4 rounded-lg"
+            className="flex flex-col gap-5 mb-4 p-4 rounded-lg shadow-inner"
         >
             {/* Champ Titre */}
             <div>
@@ -101,7 +107,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ addTask, initialTask }) => {
                 )}
             </div>
 
-            {/* Champ Catégorie */}
+            {/* Sélection de la catégorie */}
             <div>
                 <label className="block text-sm font-semibold mb-1">
                     Catégorie
@@ -112,11 +118,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ addTask, initialTask }) => {
                     className="w-full p-2 border rounded outline-none text-sm"
                 >
                     <option value="">--Sélectionner--</option>
-                    <option value="Nourriture">Nourriture</option>
-                    <option value="Invités">Invités</option>
-                    <option value="Décoration">Décoration</option>
-                    <option value="Autre">Autre</option>
+                    {categories.map((cat) => (
+                        <option key={cat} value={cat}>
+                            {cat}
+                        </option>
+                    ))}
                 </select>
+
                 {errors.category && (
                     <p className="text-red-500 text-xs py-1 italic">
                         {errors.category}
@@ -135,7 +143,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ addTask, initialTask }) => {
                     {priority === 'Haute' ? (
                         <FaStar className="text-2xl" />
                     ) : (
-                        <FaRegStar className="text-2xl text-gray-300" />
+                        <FaRegStar className="text-2xl " />
                     )}
                 </button>
             </div>

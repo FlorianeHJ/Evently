@@ -11,7 +11,7 @@ const Page = () => {
     const [eventName, setEventName] = useState('Evénement Exemple')
     const [eventImage, setEventImage] = useState(
         'https://via.placeholder.com/150'
-    ) // Remplace par l'URL de l'image de l'événement
+    ) // Remplacer par l'URL de l'image de l'événement
     const [selectedFeatures, setSelectedFeatures] = useState<string[]>([
         'Tableau de bord',
         'To-do List',
@@ -40,7 +40,7 @@ const Page = () => {
     return (
         <section className="flex">
             {/* Barre de navigation */}
-            <nav className="w-52 bg-background2/80 p-6 flex flex-col items-center">
+            <nav className="w-52 p-6 flex flex-col items-center shadow-inner">
                 <div className="w-24 h-24 mb-4">
                     <img
                         src={eventImage}
