@@ -5,6 +5,7 @@ interface Expense {
     category: string
     title: string
     amount: number
+    date: string
 }
 
 interface ExpenseRowProps {
@@ -15,6 +16,7 @@ interface ExpenseRowProps {
     onEdit: () => void
     onSave: () => void
     onDelete: () => void
+    categories: string[]
 }
 
 const ExpenseRow: React.FC<ExpenseRowProps> = ({
@@ -25,36 +27,48 @@ const ExpenseRow: React.FC<ExpenseRowProps> = ({
     onEdit,
     onSave,
     onDelete,
+    categories,
 }) => {
     return (
-        <tr>
-            <td className="p-1">
+        <div className="flex items-center justify-between border-b py-2">
+            {/* Catégorie */}
+            <div className="w-1/4 p-1">
                 {isEditing ? (
-                    <input
-                        type="text"
+                    <select
                         value={expense.category}
                         onChange={(e) => onChange('category', e.target.value)}
-                        className="p-1 text-xs rounded outline-none"
-                        placeholder="Catégorie"
-                    />
+                        className="p-1 text-xs rounded outline-none w-full"
+                    >
+                        <option value="">Sélectionnez une catégorie</option>
+                        {categories.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </select>
                 ) : (
-                    expense.category
+                    <span className="text-sm">{expense.category}</span>
                 )}
-            </td>
-            <td>
+            </div>
+
+            {/* Titre */}
+            <div className="w-1/4 p-1">
                 {isEditing ? (
                     <input
                         type="text"
                         value={expense.title}
                         onChange={(e) => onChange('title', e.target.value)}
-                        className="p-1 text-xs rounded outline-none"
+                        className="p-1 text-xs rounded outline-none w-full"
                         placeholder="Titre de la dépense"
+                        required
                     />
                 ) : (
-                    expense.title
+                    <span className="text-sm">{expense.title}</span>
                 )}
-            </td>
-            <td className="text-right">
+            </div>
+
+            {/* Montant */}
+            <div className="w-1/4 p-1 text-right">
                 {isEditing ? (
                     <input
                         type="number"
@@ -65,36 +79,57 @@ const ExpenseRow: React.FC<ExpenseRowProps> = ({
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') onSave()
                         }}
-                        className="p-1 text-xs rounded outline-none text-right"
+                        className="p-1 text-xs rounded outline-none w-full text-right"
                         placeholder="Montant (€)"
+                        required
                     />
                 ) : (
-                    `${expense.amount} €`
+                    <span className="text-sm">{`${expense.amount} €`}</span>
                 )}
-            </td>
-            <td className="flex justify-end space-x-2">
+            </div>
+
+            {/* Date */}
+            <div className="w-1/4 p-1 text-right">
                 {isEditing ? (
-                    <button onClick={onSave} className="text-green-500 text-xs">
-                        ✔
-                    </button>
-                ) : !isNewRow ? (
+                    <input
+                        type="date"
+                        value={expense.date}
+                        onChange={(e) => onChange('date', e.target.value)}
+                        className="p-1 text-xs rounded outline-none w-full text-right"
+                        required
+                    />
+                ) : (
+                    <span className="text-sm">{expense.date}</span>
+                )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-center space-x-2 p-1">
+                {!isEditing && !isNewRow ? (
                     <>
                         <button
                             onClick={onEdit}
-                            className="text-blue-500 text-xs"
+                            className="text-xs flex items-center"
                         >
                             <FaEdit />
                         </button>
                         <button
                             onClick={onDelete}
-                            className="text-red-500 text-xs"
+                            className="text-xs flex items-center"
                         >
                             <FaTrash />
                         </button>
                     </>
+                ) : isEditing ? (
+                    <button
+                        onClick={onSave}
+                        className="text-xs text-green-500 flex items-center"
+                    >
+                        ✔
+                    </button>
                 ) : null}
-            </td>
-        </tr>
+            </div>
+        </div>
     )
 }
 
