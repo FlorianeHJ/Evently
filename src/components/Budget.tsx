@@ -9,7 +9,8 @@ import {
 } from 'chart.js'
 import React, { useState } from 'react'
 import { Bar } from 'react-chartjs-2'
-import { FaPlus, FaSortAlphaDown, FaSortAlphaUp } from 'react-icons/fa'
+import { FaSort } from 'react-icons/fa'
+import { FaPlus } from 'react-icons/fa6'
 import ExpenseRow from './ExpenseRow'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
@@ -22,7 +23,7 @@ interface Expense {
 }
 
 const BudgetPage: React.FC = () => {
-    const [initialBudget, setInitialBudget] = useState<number>(0)
+    const [initialBudget, setInitialBudget] = useState<number | ''>(0)
     const [expenses, setExpenses] = useState<Expense[]>([])
     const [isEditing, setIsEditing] = useState<number | null>(null)
     const [newExpense, setNewExpense] = useState<Expense>({
@@ -31,14 +32,18 @@ const BudgetPage: React.FC = () => {
         amount: 0,
         date: '',
     })
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+    const [sortConfig, setSortConfig] = useState<{
+        key: keyof Expense
+        direction: 'asc' | 'desc'
+    } | null>(null)
     const categories = ['Nourriture', 'Transport', 'Logement', 'Autres']
 
     const totalExpenses = expenses.reduce(
         (sum, expense) => sum + expense.amount,
         0
     )
-    const remainingBudget = initialBudget - totalExpenses
+    const remainingBudget =
+        typeof initialBudget === 'number' ? initialBudget - totalExpenses : 0
 
     const handleAddExpense = () => {
         if (newExpense.category && newExpense.title && newExpense.amount > 0) {
@@ -65,13 +70,22 @@ const BudgetPage: React.FC = () => {
         setExpenses(expenses.filter((_, i) => i !== index))
     }
 
-    const toggleSortOrder = () => {
+    const sortByColumn = (key: keyof Expense) => {
+        let direction: 'asc' | 'desc' = 'asc'
+        if (
+            sortConfig &&
+            sortConfig.key === key &&
+            sortConfig.direction === 'asc'
+        ) {
+            direction = 'desc'
+        }
         const sortedExpenses = [...expenses].sort((a, b) => {
-            const amountComparison = a.amount - b.amount
-            return sortOrder === 'asc' ? amountComparison : -amountComparison
+            if (a[key] < b[key]) return direction === 'asc' ? -1 : 1
+            if (a[key] > b[key]) return direction === 'asc' ? 1 : -1
+            return 0
         })
         setExpenses(sortedExpenses)
-        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+        setSortConfig({ key, direction })
     }
 
     const chartData = {
@@ -95,33 +109,52 @@ const BudgetPage: React.FC = () => {
                 <div className="bg-white p-4 rounded shadow">
                     <h2 className="text-lg font-semibold mb-4 flex items-center justify-between">
                         Dépenses
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={toggleSortOrder}
-                                title="Trier les dépenses"
-                                className="text-primary text-lg"
-                            >
-                                {sortOrder === 'asc' ? (
-                                    <FaSortAlphaUp />
-                                ) : (
-                                    <FaSortAlphaDown />
-                                )}
-                            </button>
-                            <button
-                                onClick={() => setIsEditing(expenses.length)}
-                                className="text-primary text-lg"
-                            >
-                                <FaPlus />
-                            </button>
-                        </div>
+                        <button
+                            onClick={() => setIsEditing(expenses.length)}
+                            className="text-primary text-lg"
+                        >
+                            <FaPlus />
+                        </button>
                     </h2>
                     <div className="space-y-2">
                         {/* En-têtes */}
                         <div className="flex text-sm font-semibold text-gray-600 border-b pb-2">
-                            <div className="w-1/4">Catégorie</div>
-                            <div className="w-1/4">Titre</div>
-                            <div className="w-1/4 text-right">Montant (€)</div>
-                            <div className="w-1/4 text-right">Date</div>
+                            <div className="w-1/4 flex items-center">
+                                Catégorie
+                                <button
+                                    onClick={() => sortByColumn('category')}
+                                    className="ml-1"
+                                >
+                                    <FaSort />
+                                </button>
+                            </div>
+                            <div className="w-1/4 flex items-center">
+                                Titre
+                                <button
+                                    onClick={() => sortByColumn('title')}
+                                    className="ml-1"
+                                >
+                                    <FaSort />
+                                </button>
+                            </div>
+                            <div className="w-1/4 flex items-center justify-end">
+                                Montant (€)
+                                <button
+                                    onClick={() => sortByColumn('amount')}
+                                    className="ml-1"
+                                >
+                                    <FaSort />
+                                </button>
+                            </div>
+                            <div className="w-1/4 flex items-center justify-end">
+                                Date
+                                <button
+                                    onClick={() => sortByColumn('date')}
+                                    className="ml-1"
+                                >
+                                    <FaSort />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Liste des dépenses */}
@@ -177,10 +210,12 @@ const BudgetPage: React.FC = () => {
                             <div className="flex items-center">
                                 <input
                                     type="number"
-                                    value={initialBudget}
+                                    value={initialBudget || ''}
                                     onChange={(e) =>
                                         setInitialBudget(
-                                            parseFloat(e.target.value)
+                                            e.target.value === ''
+                                                ? ''
+                                                : parseFloat(e.target.value)
                                         )
                                     }
                                     className="ml-2 p-1 rounded outline-none text-right"

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 
 interface Expense {
@@ -29,6 +29,28 @@ const ExpenseRow: React.FC<ExpenseRowProps> = ({
     onDelete,
     categories,
 }) => {
+    const [errors, setErrors] = useState({
+        title: false,
+        amount: false,
+        date: false,
+    })
+
+    const validateFields = () => {
+        const newErrors = {
+            title: !expense.title,
+            amount: expense.amount <= 0,
+            date: !expense.date,
+        }
+        setErrors(newErrors)
+        return !newErrors.title && !newErrors.amount && !newErrors.date
+    }
+
+    const handleSave = () => {
+        if (validateFields()) {
+            onSave()
+        }
+    }
+
     return (
         <div className="flex items-center justify-between border-b py-2">
             {/* Catégorie */}
@@ -54,14 +76,22 @@ const ExpenseRow: React.FC<ExpenseRowProps> = ({
             {/* Titre */}
             <div className="w-1/4 p-1">
                 {isEditing ? (
-                    <input
-                        type="text"
-                        value={expense.title}
-                        onChange={(e) => onChange('title', e.target.value)}
-                        className="p-1 text-xs rounded outline-none w-full"
-                        placeholder="Titre de la dépense"
-                        required
-                    />
+                    <>
+                        <input
+                            type="text"
+                            value={expense.title}
+                            onChange={(e) => onChange('title', e.target.value)}
+                            className={`p-1 text-xs rounded outline-none w-full ${
+                                errors.title ? 'border border-red-500' : ''
+                            }`}
+                            placeholder="Titre de la dépense"
+                        />
+                        {errors.title && (
+                            <p className="text-error italic text-xs mt-1">
+                                Incomplet
+                            </p>
+                        )}
+                    </>
                 ) : (
                     <span className="text-sm">{expense.title}</span>
                 )}
@@ -70,19 +100,27 @@ const ExpenseRow: React.FC<ExpenseRowProps> = ({
             {/* Montant */}
             <div className="w-1/4 p-1 text-right">
                 {isEditing ? (
-                    <input
-                        type="number"
-                        value={expense.amount || ''}
-                        onChange={(e) =>
-                            onChange('amount', parseFloat(e.target.value))
-                        }
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') onSave()
-                        }}
-                        className="p-1 text-xs rounded outline-none w-full text-right"
-                        placeholder="Montant (€)"
-                        required
-                    />
+                    <>
+                        <input
+                            type="number"
+                            value={expense.amount || ''}
+                            onChange={(e) =>
+                                onChange('amount', parseFloat(e.target.value))
+                            }
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleSave()
+                            }}
+                            className={`p-1 text-xs rounded outline-none w-full text-right ${
+                                errors.amount ? 'border border-red-500' : ''
+                            }`}
+                            placeholder="Montant (€)"
+                        />
+                        {errors.amount && (
+                            <p className="italic text-error text-xs mt-1">
+                                Incomplet
+                            </p>
+                        )}
+                    </>
                 ) : (
                     <span className="text-sm">{`${expense.amount} €`}</span>
                 )}
@@ -91,13 +129,14 @@ const ExpenseRow: React.FC<ExpenseRowProps> = ({
             {/* Date */}
             <div className="w-1/4 p-1 text-right">
                 {isEditing ? (
-                    <input
-                        type="date"
-                        value={expense.date}
-                        onChange={(e) => onChange('date', e.target.value)}
-                        className="p-1 text-xs rounded outline-none w-full text-right"
-                        required
-                    />
+                    <>
+                        <input
+                            type="date"
+                            value={expense.date}
+                            onChange={(e) => onChange('date', e.target.value)}
+                            className="p-1 text-xs rounded outline-none w-full text-right"
+                        />
+                    </>
                 ) : (
                     <span className="text-sm">{expense.date}</span>
                 )}
@@ -122,7 +161,7 @@ const ExpenseRow: React.FC<ExpenseRowProps> = ({
                     </>
                 ) : isEditing ? (
                     <button
-                        onClick={onSave}
+                        onClick={handleSave}
                         className="text-xs text-green-500 flex items-center"
                     >
                         ✔
