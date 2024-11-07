@@ -1,5 +1,6 @@
 import TaskForm from '@/components/TaskForm'
 import TaskItem from '@/components/TaskItem'
+import { compareDesc, parseISO } from 'date-fns'
 import Image from 'next/image'
 import { useState } from 'react'
 import { FaPlus } from 'react-icons/fa6'
@@ -13,6 +14,7 @@ interface Task {
     priority: 'Basse' | 'Haute'
     completed: boolean
     note?: string
+    dueDate?: string // Échéance
 }
 
 const Page = () => {
@@ -21,7 +23,7 @@ const Page = () => {
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [editingTask, setEditingTask] = useState<Task | null>(null)
     const [sortOption, setSortOption] = useState<
-        'alphabetical' | 'priority' | 'category'
+        'alphabetical' | 'priority' | 'category' | 'date'
     >('alphabetical')
     const [categories, setCategories] = useState<string[]>([
         'Nourriture',
@@ -88,13 +90,17 @@ const Page = () => {
             return a.priority === 'Haute' && b.priority === 'Basse' ? -1 : 1
         if (sortOption === 'category')
             return a.category.localeCompare(b.category)
+        if (sortOption === 'date') {
+            if (!b.dueDate) return 1
+            if (!a.dueDate) return -1
+            return compareDesc(parseISO(b.dueDate), parseISO(a.dueDate))
+        }
         return 0
     })
 
     // Rendu de la liste des tâches triées
     const renderTasks = () => {
         if (sortOption === 'category') {
-            // Regrouper les tâches par catégorie
             const tasksByCategory = tasks.reduce((acc, task) => {
                 if (!acc[task.category]) acc[task.category] = []
                 acc[task.category].push(task)
@@ -106,11 +112,9 @@ const Page = () => {
                     {Object.entries(tasksByCategory).map(
                         ([category, tasks]) => (
                             <div key={category}>
-                                {/* Affichage du nom de la catégorie */}
-                                <h3 className="text-base mb-4 mr-4 mt-6 px-4 bg-primary inline-block rounded-full py-1 ">
+                                <h3 className="text-lg ml-2 px-2 py-1 mb-2 inline-block bg-primary text-white rounded-full">
                                     {category}
                                 </h3>
-                                {/* Liste des tâches sous chaque catégorie */}
                                 <div className="space-y-3">
                                     {tasks.map((task) => (
                                         <TaskItem
@@ -142,7 +146,7 @@ const Page = () => {
                         onComplete={() => completeTask(task.id)}
                         onDelete={() => deleteTask(task.id)}
                         onEdit={() => editTask(task)}
-                        hideCategory={false} // Afficher le tag de catégorie
+                        hideCategory={false}
                     />
                 ))}
             </div>
@@ -151,7 +155,6 @@ const Page = () => {
 
     return (
         <div className="w-full p-4 rounded-lg shadow-xl bg-background">
-            {/* Message pour liste de tâches vide */}
             {tasks.length === 0 && !isFormOpen && (
                 <div className="flex flex-col gap-10 justify-center items-center">
                     <p className="text-center mt-4">
@@ -170,7 +173,6 @@ const Page = () => {
                 </div>
             )}
 
-            {/* Bouton ajouter lorsque des tâches existent */}
             {tasks.length > 0 && (
                 <div className="flex justify-end items-center mb-4">
                     <button
@@ -189,7 +191,6 @@ const Page = () => {
                 </div>
             )}
 
-            {/* Formulaire d'ajout ou de modification */}
             {isFormOpen && (
                 <TaskForm
                     addTask={addTask}
@@ -198,7 +199,6 @@ const Page = () => {
                 />
             )}
 
-            {/* Filtre pour trier les tâches */}
             {tasks.length > 0 && (
                 <div className="flex justify-between items-center mb-4">
                     <label className="text-sm font-semibold">
@@ -211,6 +211,7 @@ const Page = () => {
                                         | 'alphabetical'
                                         | 'priority'
                                         | 'category'
+                                        | 'date'
                                 )
                             }
                             className="ml-2 p-1 rounded border text-sm"
@@ -220,15 +221,14 @@ const Page = () => {
                             </option>
                             <option value="priority">Priorité</option>
                             <option value="category">Catégorie</option>
+                            <option value="date">Date</option>
                         </select>
                     </label>
                 </div>
             )}
 
-            {/* Rendu des tâches selon le filtre sélectionné */}
             {renderTasks()}
 
-            {/* Liste des tâches terminées */}
             {completedTasks.length > 0 && (
                 <div className="mt-8">
                     <h3 className="text-xl font-semibold mb-4 text-primary">
