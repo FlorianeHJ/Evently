@@ -9,6 +9,8 @@ import {
 } from 'chart.js'
 import React, { useState } from 'react'
 import { Bar } from 'react-chartjs-2'
+import { FaPlus } from 'react-icons/fa'
+import ExpenseRow from './ExpenseRow'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -19,31 +21,46 @@ interface Expense {
 }
 
 const BudgetPage: React.FC = () => {
-    // États pour le budget et les dépenses
     const [initialBudget, setInitialBudget] = useState<number>(0)
     const [expenses, setExpenses] = useState<Expense[]>([])
+    const [isEditing, setIsEditing] = useState<number | null>(null)
     const [newExpense, setNewExpense] = useState<Expense>({
         category: '',
         title: '',
         amount: 0,
     })
 
-    // Calculs automatiques
     const totalExpenses = expenses.reduce(
         (sum, expense) => sum + expense.amount,
         0
     )
     const remainingBudget = initialBudget - totalExpenses
 
-    // Fonction pour ajouter une nouvelle dépense
     const handleAddExpense = () => {
         if (newExpense.category && newExpense.title && newExpense.amount > 0) {
             setExpenses([...expenses, newExpense])
             setNewExpense({ category: '', title: '', amount: 0 })
+            setIsEditing(expenses.length + 1) // Basculer vers une nouvelle ligne vide
         }
     }
 
-    // Données du graphique
+    const handleEditExpense = (index: number) => {
+        setIsEditing(index)
+        setNewExpense(expenses[index])
+    }
+
+    const handleSaveEditExpense = (index: number) => {
+        const updatedExpenses = [...expenses]
+        updatedExpenses[index] = newExpense
+        setExpenses(updatedExpenses)
+        setIsEditing(null)
+        setNewExpense({ category: '', title: '', amount: 0 })
+    }
+
+    const handleDeleteExpense = (index: number) => {
+        setExpenses(expenses.filter((_, i) => i !== index))
+    }
+
     const chartData = {
         labels: ['Dépenses', 'Budget restant'],
         datasets: [
@@ -60,79 +77,61 @@ const BudgetPage: React.FC = () => {
 
     return (
         <div className="flex gap-4 p-6">
-            {/* Partie gauche - Ajouter une dépense */}
+            {/* Partie gauche - Tableau des dépenses */}
             <div className="w-1/2 space-y-6">
-                {/* Ajouter une dépense */}
                 <div className="bg-white p-4 rounded shadow">
-                    <h2 className="text-lg font-semibold mb-4">
-                        Ajouter une dépense
+                    <h2 className="text-lg font-semibold mb-4 flex items-center justify-between">
+                        Dépenses
+                        <button
+                            onClick={() => setIsEditing(expenses.length)}
+                            className="text-primary text-lg"
+                        >
+                            <FaPlus />
+                        </button>
                     </h2>
-                    <div className="flex flex-col gap-2 mb-4">
-                        <input
-                            type="text"
-                            placeholder="Catégorie"
-                            value={newExpense.category}
-                            onChange={(e) =>
-                                setNewExpense({
-                                    ...newExpense,
-                                    category: e.target.value,
-                                })
-                            }
-                            className="p-1 text-xs rounded outline-none"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Titre de la dépense"
-                            value={newExpense.title}
-                            onChange={(e) =>
-                                setNewExpense({
-                                    ...newExpense,
-                                    title: e.target.value,
-                                })
-                            }
-                            className="p-1 text-xs rounded outline-none"
-                        />
-                        <input
-                            type="number"
-                            placeholder="Montant (€)"
-                            value={newExpense.amount || ''}
-                            onChange={(e) =>
-                                setNewExpense({
-                                    ...newExpense,
-                                    amount: parseFloat(e.target.value),
-                                })
-                            }
-                            className="p-1 text-xs rounded outline-none"
-                        />
-                        <div className="flex items-center justify-center my-2">
-                            <button
-                                onClick={handleAddExpense}
-                                className="btn text-xs"
-                            >
-                                Ajouter la dépense
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Liste des dépenses */}
                     <table className="w-full text-left text-sm">
                         <thead>
                             <tr>
                                 <th>Catégorie</th>
                                 <th>Titre</th>
                                 <th>Montant (€)</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {expenses.map((expense, index) => (
-                                <tr key={index} className="border-b">
-                                    <td>{expense.category}</td>
-                                    <td>{expense.title}</td>
-                                    <td className="text-right">
-                                        {expense.amount}
-                                    </td>
-                                </tr>
+                                <ExpenseRow
+                                    key={index}
+                                    expense={expense}
+                                    isEditing={isEditing === index}
+                                    isNewRow={false}
+                                    onChange={(field, value) =>
+                                        setNewExpense({
+                                            ...newExpense,
+                                            [field]: value,
+                                        })
+                                    }
+                                    onEdit={() => handleEditExpense(index)}
+                                    onSave={() => handleSaveEditExpense(index)}
+                                    onDelete={() => handleDeleteExpense(index)}
+                                />
                             ))}
+                            {isEditing === expenses.length && (
+                                <ExpenseRow
+                                    expense={newExpense}
+                                    isEditing={true}
+                                    isNewRow={true}
+                                    onChange={(field, value) =>
+                                        setNewExpense({
+                                            ...newExpense,
+                                            [field]: value,
+                                        })
+                                    }
+                                    onEdit={() => {}}
+                                    onSave={handleAddExpense}
+                                    onDelete={() => {}}
+                                />
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -140,7 +139,6 @@ const BudgetPage: React.FC = () => {
 
             {/* Partie droite - Résumé du budget et graphique */}
             <div className="w-1/2 space-y-6">
-                {/* Résumé du budget */}
                 <div className="bg-white p-4 rounded shadow">
                     <h2 className="text-xl font-semibold mb-4">
                         Résumé du budget
@@ -170,7 +168,6 @@ const BudgetPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Graphique des dépenses */}
                 <div className="bg-white p-4 rounded shadow">
                     <h2 className="text-xl font-semibold mb-4 text-center">
                         Graphique des dépenses
