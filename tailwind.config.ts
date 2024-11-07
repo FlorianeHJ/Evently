@@ -11,6 +11,7 @@ const config: Config = {
             btnHover: '#7A8D64', // Couleur au survol du bouton
             btnSelected: '#24372A', // Couleur lorsque le bouton est sélectionné
             text: '#FFF9E8',
+            error: '#CE2C31',
         },
         fontFamily: {
             primary: 'montserrat',

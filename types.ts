@@ -5,4 +5,5 @@ export interface Task {
     category: string
     priority: 'Basse' | 'Haute'
     completed: boolean
+    note?: string
 }
